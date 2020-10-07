@@ -36,12 +36,23 @@ nav ul li a:hover {
 main {
     width: 100%;
     height: 100%;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    font-size: 48px;
 }
 
 form {
     display: flex;
     flex-direction: column;
     width: 30%;
+    border: 4px solid lightgray;
+    padding: 1em;
 }
 
 .form-group {
@@ -50,12 +61,18 @@ form {
     padding: .66em;
 }
 
-.form-group span.error {
-    color: lightcoral;
+header {
+    padding: .66em;
 }
 
-.form-group span.success {
+span.error {
+    color: lightcoral;
+    font-weight: bolder;
+}
+
+span.success {
     color: rgb(12, 206, 12);
+    font-weight: bolder;
 }
 
 .form-group label {

@@ -21,5 +21,6 @@ func main() {
 	app.Get("/read", GetReadHandler)
 	app.Get("/update", GetUpdateHandler)
 	app.Get("/delete", GetDeleteHandler)
+
 	app.Listen(":3000")
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,15 +32,15 @@ func PostCreateHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	if len(p.Name) < 5 {
+	if len(p.Name) < 1 {
 		fmt.Println("Name field missing")
-		return c.Redirect("/?error=Name field missing") // display some kind of error message
-	} else if len(p.Company) < 5 {
+		return c.Redirect("/?error=Name field is missing") // display some kind of error message
+	} else if len(p.Company) < 1 {
 		fmt.Println("Company field missing")
-		return c.Redirect("/?error=Company field missing") // display some kind of error message
+		return c.Redirect("/?error=Company field is missing") // display some kind of error message
 	} else if p.Age <= 0 {
 		fmt.Println("Age to low or missing")
-		return c.Redirect("/?error=Age to low or missing") // display some kind of error message
+		return c.Redirect("/?error=Age to low or is missing") // display some kind of error message
 	}
 
 	var mongoConfig MongoConfig = MongoConfig{
@@ -50,16 +51,21 @@ func PostCreateHandler(c *fiber.Ctx) error {
 			"Company": p.Company,
 			"Age":     p.Age,
 		},
-		channel: make(chan error),
 	}
 
-	go connect(mongoConfig) // insert document with a go routine
-
-	err := <-mongoConfig.channel
+	mongoClient, err := connect() // temporarily connect to the database
 
 	if err != nil {
-		return c.Redirect("/") // display some kind of error message
+		log.Fatal(err)
 	}
+
+	result, err := insertDocument(mongoConfig, mongoClient)
+
+	if err != nil {
+		fmt.Println("Error")
+	}
+
+	fmt.Println(result)
 
 	// insertion success
 	return c.Redirect("/?success=Document saved")
