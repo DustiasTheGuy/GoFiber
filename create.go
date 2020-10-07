@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Person struct is how we can interface with data submitted by a form
@@ -32,5 +33,23 @@ func PostCreateHandler(c *fiber.Ctx) error {
 
 	// save person(p) to database
 
+	var mongoConfig MongoConfig = MongoConfig{
+		Database:   "gofiber",
+		Collection: "people",
+		Data: bson.M{
+			"Name":    p.Name,
+			"Company": p.Company,
+			"Age":     p.Age,
+		},
+	}
+
+	err := connect(mongoConfig)
+
+	if err != nil {
+		// Failed at inserting data
+		return c.Redirect("/")
+	}
+
+	// insertion success
 	return c.Redirect("/")
 }
