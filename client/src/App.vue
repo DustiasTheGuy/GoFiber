@@ -14,8 +14,10 @@
 </template>
 
 <script>
+
 import AddComponent from './components/AddComponent'
 import EditComponent from './components/EditComponent'
+
 
 export default {
   name: 'App',
@@ -45,15 +47,15 @@ export default {
 
   header {
     height: 300px;
-    background-color: olivedrab;
+    background-color: rgb(16, 82, 168);
   }
 
   main {
     width: 100%;
-    height: calc(100% - 300px);
-    background-color: #f3e5ab;
+    height: 100%;
+    background-color: #c5c4c2;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 2fr;
     grid-gap: 1em;
     padding: 1em;
   }

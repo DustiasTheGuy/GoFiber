@@ -4,33 +4,31 @@
       <form>
         <h1>Add Employee</h1>
 
-        <div class="form-group">
+        <md-field>
             <label for="">Employee Name</label>
-            <input type="text" placeholder="Mark Smith" v-model="name">
-        </div>
-        <div class="form-group">
+            <md-input type="text" placeholder="Mark Smith" v-model="name"></md-input>
+        </md-field>
+        <md-field>
             <label for="">Employee Age</label>
-            <input type="text" placeholder="23" v-model="age">
-        </div>
-        <div class="form-group">
+            <md-input type="text" placeholder="23" v-model="age"></md-input>
+        </md-field>
+        <md-field>
             <label for="">Employee Department</label>
-            <input type="text" placeholder="Marketing" v-model="department">
-        </div>
-        <div class="form-group">
+            <md-input type="text" placeholder="Marketing" v-model="department"></md-input>
+        </md-field>
+        <md-field>
             <label for="">Employee Salary</label>
-            <input type="text" placeholder="3900" v-model="salary">
-        </div>
+            <md-input type="text" placeholder="3900" v-model="salary"></md-input>
+        </md-field>
         
-        <div class="button-container">
+        <div class="button-container" v-if="!showSnackbar">
             <button type="button" @click="submit">Add Employee</button>
         </div>
       </form>
 
-
-        {{name}}
-        {{age}}
-        {{department}}
-        {{salary}} 
+    <md-snackbar :md-active.sync="showSnackbar">
+        <span class="msg" v-bind:style="{ color: msgColor }">{{message}}</span>
+    </md-snackbar>
   </div>
 </template>
 
@@ -46,7 +44,10 @@ export default {
         name: undefined,
         age: undefined,
         department: undefined,
-        salary: undefined
+        salary: undefined,
+        message: undefined,
+        msgColor: "green",
+        showSnackbar: false
       }
   },
   methods: {
@@ -60,6 +61,18 @@ export default {
           axios.post("http://localhost:3000/create", data)
           .then(response => {
               console.log(response)
+              this.showSnackbar = true
+              this.message = response.data.message
+
+              if(response.data.success) {
+                  this.msgColor = "#006e10"
+                  this.name = undefined
+                  this.age = undefined
+                  this.department = undefined
+                  this.salary = undefined
+              } else {
+                  this.msgColor = "#ff2929"
+              }
           })
           .catch(err => {
               console.log(err)
@@ -71,20 +84,24 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    .msg {
+        font-size: 18px;
+    }
     form {
+        padding: 2.43em;
+        
+        width: 100%;      
         background: #ffffff;
-        padding: 1em;
         h1 {
-            margin: 0;
-            color: olivedrab;
+            color: rgb(16, 82, 168);
             font-size: 48px;
+            text-align: center;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             padding: .77em 0;
-
             label {
                 margin-bottom: 8px;
                 font-weight: 600;
@@ -100,10 +117,17 @@ export default {
             justify-content: flex-end;
 
             button {
-                padding: .88em;
-                background-color: olivedrab;
+                padding: 1em;
+                width: 33%;
+                font-weight: bold;
+                background-color: rgb(16, 82, 168);
                 color: #ffffff;
                 border: none;
+                transition: background-color .3s cubic-bezier(0.075, 0.82, 0.165, 1);
+                &:hover {
+                background-color: rgb(12, 71, 150);
+                    cursor: pointer;
+                }
             }
         }
     }
