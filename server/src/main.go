@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 // Response for an incomming request
@@ -16,12 +17,13 @@ func main() {
 	app := fiber.New()
 
 	// prefix static folder with /public
-	app.Static("/public", "./public")
+	// app.Static("/public", "./public")
 
 	// string, handler
-	// handler returns an error
-	app.Get("/read", ReadHandler)
+	// Default config
+	app.Use(cors.New())
 
+	app.Get("/read", ReadHandler)
 	app.Post("/create", CreateHandler)
 	app.Post("/delete", DeleteHandler)
 	app.Post("/update", UpdateHandler)

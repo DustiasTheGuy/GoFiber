@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func readDocuments(config MongoConfig, client *mongo.Client) ([]*Person, error) {
+func (config MongoConfig) readDocuments(client *mongo.Client) ([]*Person, error) {
 	var result []*Person
 	collection := client.Database(config.Database).Collection(config.Collection)
 
@@ -19,15 +19,12 @@ func readDocuments(config MongoConfig, client *mongo.Client) ([]*Person, error) 
 	}
 
 	for cur.Next(context.TODO()) {
-
-		// create a value into which the single document can be decoded
-		var elem Person
-		err := cur.Decode(&elem)
+		var element Person
+		err := cur.Decode(&element)
 		if err != nil {
 			return nil, err
 		}
-
-		result = append(result, &elem)
+		result = append(result, &element)
 	}
 
 	if err := cur.Err(); err != nil {
@@ -42,11 +39,6 @@ func readDocuments(config MongoConfig, client *mongo.Client) ([]*Person, error) 
 // ReadHandler returns the read hbs template located in the views folder
 func ReadHandler(c *fiber.Ctx) error {
 	// struct can be found in db.go
-	var mongoConfig MongoConfig = MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data:       nil,
-	}
 
 	mongoClient, err := connect() // temporarily connect to the database
 
@@ -59,7 +51,11 @@ func ReadHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	result, err := readDocuments(mongoConfig, mongoClient)
+	result, err := MongoConfig{
+		Database:   "gofiber", // Which database
+		Collection: "people",  // Which collection
+		Data:       nil,       // No data is need to perform a read
+	}.readDocuments(mongoClient)
 
 	if err != nil {
 		return c.JSON(Response{

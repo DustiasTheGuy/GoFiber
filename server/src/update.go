@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func updateDocument(config MongoConfig, client *mongo.Client, filterOptions bson.M, update bson.M) error {
+func (config MongoConfig) updateDocument(client *mongo.Client, update bson.M) error {
 	collection := client.Database(config.Database).Collection(config.Collection)
-	_, err := collection.UpdateOne(context.TODO(), filterOptions, update)
+	_, err := collection.UpdateOne(context.TODO(), config.Data, update)
 
 	if err != nil {
 		fmt.Println(err)
@@ -44,17 +44,17 @@ func UpdateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	err = updateDocument(MongoConfig{
+	err = MongoConfig{
 		Database:   "gofiber", // Which database
 		Collection: "people",  // Which collection
-		Data:       nil,
-	}, mongoClient,
-		bson.M{"_id": p.ID},
+		Data:       bson.M{"_id": p.ID},
+	}.updateDocument(mongoClient,
 		bson.M{
 			"$set": bson.M{
-				"Name":    p.Name,
-				"Company": p.Company,
-				"Age":     p.Age,
+				"Name":       p.Name,
+				"Department": p.Department,
+				"Age":        p.Age,
+				"Salary":     p.Salary,
 			},
 		},
 	)
@@ -72,5 +72,6 @@ func UpdateHandler(c *fiber.Ctx) error {
 		ErrorMessage: "Update success",
 		StatusCode:   200,
 		Success:      true,
+		Data:         nil,
 	})
 }

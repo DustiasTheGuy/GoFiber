@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func deleteDocument(config MongoConfig, client *mongo.Client) error {
+func (config MongoConfig) deleteDocument(client *mongo.Client) error {
 	collection := client.Database(config.Database).Collection(config.Collection)
 	_, err := collection.DeleteOne(context.TODO(), config.Data)
 
@@ -42,7 +42,7 @@ func DeleteHandler(c *fiber.Ctx) error {
 	}
 
 	mongoClient, err := connect() // temporarily connect to the database
-	err = deleteDocument(mongoConfig, mongoClient)
+	err = mongoConfig.deleteDocument(mongoClient)
 
 	if err != nil {
 		return c.JSON(Response{

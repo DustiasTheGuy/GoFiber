@@ -6,19 +6,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Person struct is how we can interface with data submitted by a form
-type Person struct {
-	ID      primitive.ObjectID `bson:"_id" json:"_id,omitempty"` // Id for the document
-	Name    string             `json:"name"`                     // Name of an employee
-	Company string             `json:"company"`                  // Company of an employee
-	Age     int16              `json:"age"`                      // Age of an employee
-}
-
-func createDocument(config MongoConfig, client *mongo.Client) error {
+func (config MongoConfig) createDocument(client *mongo.Client) error {
 	collection := client.Database(config.Database).Collection(config.Collection)
 
 	_, err := collection.InsertOne(context.TODO(), config.Data)
@@ -26,9 +17,6 @@ func createDocument(config MongoConfig, client *mongo.Client) error {
 		return err
 	}
 	defer client.Disconnect(context.TODO())
-
-	//fmt.Println("Inserted a single document: ", result.InsertedID)
-
 	return nil
 }
 
@@ -36,24 +24,23 @@ func createDocument(config MongoConfig, client *mongo.Client) error {
 func CreateHandler(c *fiber.Ctx) error {
 	p := new(Person)
 
-	fmt.Println(p)
-
 	if err := c.BodyParser(p); err != nil {
+		fmt.Println(err)
 		return err
 	}
 
 	// Response struct can be found in main.go
 	if len(p.Name) < 1 {
 		return c.JSON(Response{
-			ErrorMessage: "Name too short",
+			ErrorMessage: "Name field too short",
 			StatusCode:   406,
 			Success:      false,
 			Data:         nil,
 		})
 
-	} else if len(p.Company) < 1 {
+	} else if len(p.Department) < 1 {
 		return c.JSON(Response{
-			ErrorMessage: "Comapny too short",
+			ErrorMessage: "Department field too short",
 			StatusCode:   406,
 			Success:      false,
 			Data:         nil,
@@ -68,20 +55,10 @@ func CreateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// struct can be found in db.go
-	var mongoConfig MongoConfig = MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data: bson.M{ // The data that will be inserted into the collection
-			"Name":    p.Name,
-			"Company": p.Company,
-			"Age":     p.Age,
-		},
-	}
-
 	mongoClient, err := connect() // temporarily connect to the database
 
 	if err != nil { // The connection to the database was not successful
+		fmt.Println(err)
 		return c.JSON(Response{
 			ErrorMessage: "Connection to database could not be established",
 			StatusCode:   400,
@@ -90,9 +67,19 @@ func CreateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	err = createDocument(mongoConfig, mongoClient)
+	err = MongoConfig{
+		Database:   "gofiber", // Which database
+		Collection: "people",  // Which collection
+		Data: bson.M{ // The data that will be inserted into the collection
+			"Name":       p.Name,
+			"Department": p.Department,
+			"Age":        p.Age,
+			"Salary":     p.Salary,
+		},
+	}.createDocument(mongoClient)
 
 	if err != nil { // the document insertion was not successfull
+		fmt.Println(err)
 		return c.JSON(Response{
 			ErrorMessage: "Document has not been inserted",
 			StatusCode:   400,
