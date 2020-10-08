@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,9 +16,17 @@ type MongoConfig struct {
 }
 
 func connect() (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	// Set client options
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.Ping(context.TODO(), nil)
 
 	if err != nil {
 		return nil, err
@@ -28,16 +35,47 @@ func connect() (*mongo.Client, error) {
 	return client, err
 }
 
-func insertDocument(config MongoConfig, client *mongo.Client) (*mongo.InsertOneResult, error) {
+func createDocument(config MongoConfig, client *mongo.Client) error {
 	collection := client.Database(config.Database).Collection(config.Collection)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
-	result, err := collection.InsertOne(ctx, config.Data)
+	_, err := collection.InsertOne(context.TODO(), config.Data)
+	if err != nil {
+		return err
+	}
+	defer client.Disconnect(context.TODO())
+
+	//fmt.Println("Inserted a single document: ", result.InsertedID)
+
+	return nil
+}
+
+func readDocuments(config MongoConfig, client *mongo.Client) ([]*Person, error) {
+	collection := client.Database(config.Database).Collection(config.Collection)
+
+	var result []*Person
+
+	cur, err := collection.Find(context.TODO(), bson.D{{}}, options.Find())
 	if err != nil {
 		return nil, err
 	}
-	defer client.Disconnect(ctx)
+
+	for cur.Next(context.TODO()) {
+
+		// create a value into which the single document can be decoded
+		var elem Person
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, &elem)
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	// Close the cursor once finished
+	cur.Close(context.TODO())
 
 	return result, nil
 }

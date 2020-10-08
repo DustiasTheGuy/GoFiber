@@ -6,9 +6,10 @@ import (
 
 // Response for an incomming request
 type Response struct {
-	ErrorMessage string `json:"message"`
-	StatusCode   int    `json:"statusCode"`
-	Success      bool   `json:"success"`
+	ErrorMessage string      `json:"message"`
+	StatusCode   int         `json:"statusCode"`
+	Success      bool        `json:"success"`
+	Data         interface{} `json:"data"`
 }
 
 func main() {

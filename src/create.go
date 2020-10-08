@@ -30,6 +30,7 @@ func CreateHandler(c *fiber.Ctx) error {
 			ErrorMessage: "Name too short",
 			StatusCode:   406,
 			Success:      false,
+			Data:         nil,
 		})
 
 	} else if len(p.Company) < 1 {
@@ -37,6 +38,7 @@ func CreateHandler(c *fiber.Ctx) error {
 			ErrorMessage: "Comapny too short",
 			StatusCode:   406,
 			Success:      false,
+			Data:         nil,
 		})
 
 	} else if p.Age <= 0 {
@@ -44,6 +46,7 @@ func CreateHandler(c *fiber.Ctx) error {
 			ErrorMessage: "Age too low",
 			StatusCode:   406,
 			Success:      false,
+			Data:         nil,
 		})
 	}
 
@@ -65,17 +68,18 @@ func CreateHandler(c *fiber.Ctx) error {
 			ErrorMessage: "Connection to database could not be established",
 			StatusCode:   400,
 			Success:      false,
+			Data:         nil,
 		})
 	}
 
-	result, err := insertDocument(mongoConfig, mongoClient)
-	fmt.Println(result) // not sure what to use this variable for
+	err = createDocument(mongoConfig, mongoClient)
 
 	if err != nil { // the document insertion was not successfull
 		return c.JSON(Response{
 			ErrorMessage: "Document has not been inserted",
 			StatusCode:   400,
 			Success:      false,
+			Data:         nil,
 		})
 	}
 
@@ -83,5 +87,6 @@ func CreateHandler(c *fiber.Ctx) error {
 		ErrorMessage: "Document Created",
 		StatusCode:   201,
 		Success:      true,
+		Data:         nil,
 	})
 }
