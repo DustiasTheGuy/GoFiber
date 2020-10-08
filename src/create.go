@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,43 +9,49 @@ import (
 
 // Person struct is how we can interface with data submitted by a form
 type Person struct {
-	Name    string `form:"name"`    // Name of an employee
-	Company string `form:"company"` // Company of an employee
-	Age     int16  `form:"age"`     // Age of an employee
+	Name    string `json:"name"`    // Name of an employee
+	Company string `json:"company"` // Company of an employee
+	Age     int16  `json:"age"`     // Age of an employee
 }
 
-// GetCreateHandler returns the create hbs template located in the views folder
-func GetCreateHandler(c *fiber.Ctx) error { // Create
-	return c.Render("create", fiber.Map{
-		"title":   "Create", // Arbitrary
-		"error":   c.Query("error"),
-		"success": c.Query("success"),
-	}, "layouts/main") // Extend the layouts.hbs file
-}
-
-// PostCreateHandler for parsing incomming form data
-func PostCreateHandler(c *fiber.Ctx) error {
+// CreateHandler for parsing incomming form data
+func CreateHandler(c *fiber.Ctx) error {
 	p := new(Person)
+
+	fmt.Println(p)
 
 	if err := c.BodyParser(p); err != nil {
 		return err
 	}
 
+	// Response struct can be found in main.go
 	if len(p.Name) < 1 {
-		fmt.Println("Name field missing")
-		return c.Redirect("/?error=Name field is missing") // display some kind of error message
+		return c.JSON(Response{
+			ErrorMessage: "Name too short",
+			StatusCode:   406,
+			Success:      false,
+		})
+
 	} else if len(p.Company) < 1 {
-		fmt.Println("Company field missing")
-		return c.Redirect("/?error=Company field is missing") // display some kind of error message
+		return c.JSON(Response{
+			ErrorMessage: "Comapny too short",
+			StatusCode:   406,
+			Success:      false,
+		})
+
 	} else if p.Age <= 0 {
-		fmt.Println("Age to low or missing")
-		return c.Redirect("/?error=Age to low or is missing") // display some kind of error message
+		return c.JSON(Response{
+			ErrorMessage: "Age too low",
+			StatusCode:   406,
+			Success:      false,
+		})
 	}
 
+	// struct can be found in db.go
 	var mongoConfig MongoConfig = MongoConfig{
-		Database:   "gofiber",
-		Collection: "people",
-		Data: bson.M{
+		Database:   "gofiber", // Which database
+		Collection: "people",  // Which collection
+		Data: bson.M{ // The data that will be inserted into the collection
 			"Name":    p.Name,
 			"Company": p.Company,
 			"Age":     p.Age,
@@ -55,18 +60,28 @@ func PostCreateHandler(c *fiber.Ctx) error {
 
 	mongoClient, err := connect() // temporarily connect to the database
 
-	if err != nil {
-		log.Fatal(err)
+	if err != nil { // The connection to the database was not successful
+		return c.JSON(Response{
+			ErrorMessage: "Connection to database could not be established",
+			StatusCode:   400,
+			Success:      false,
+		})
 	}
 
 	result, err := insertDocument(mongoConfig, mongoClient)
+	fmt.Println(result) // not sure what to use this variable for
 
-	if err != nil {
-		fmt.Println("Error")
+	if err != nil { // the document insertion was not successfull
+		return c.JSON(Response{
+			ErrorMessage: "Document has not been inserted",
+			StatusCode:   400,
+			Success:      false,
+		})
 	}
 
-	fmt.Println(result)
-
-	// insertion success
-	return c.Redirect("/?success=Document saved")
+	return c.JSON(Response{ // insertion success
+		ErrorMessage: "Document Created",
+		StatusCode:   201,
+		Success:      true,
+	})
 }

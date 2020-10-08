@@ -32,11 +32,12 @@ func insertDocument(config MongoConfig, client *mongo.Client) (*mongo.InsertOneR
 	collection := client.Database(config.Database).Collection(config.Collection)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	result, err := collection.InsertOne(ctx, config.Data)
 
+	result, err := collection.InsertOne(ctx, config.Data)
 	if err != nil {
 		return nil, err
 	}
 	defer client.Disconnect(ctx)
+
 	return result, nil
 }
