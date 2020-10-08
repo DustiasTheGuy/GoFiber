@@ -37,6 +37,6 @@ func insertDocument(config MongoConfig, client *mongo.Client) (*mongo.InsertOneR
 	if err != nil {
 		return nil, err
 	}
-
+	defer client.Disconnect(ctx)
 	return result, nil
 }
