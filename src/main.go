@@ -20,10 +20,11 @@ func main() {
 
 	// string, handler
 	// handler returns an error
-	app.Post("/create", CreateHandler)
 	app.Get("/read", ReadHandler)
-	app.Get("/update", UpdateHandler)
-	app.Get("/delete", DeleteHandler)
+
+	app.Post("/create", CreateHandler)
+	app.Post("/delete", DeleteHandler)
+	app.Post("/update", UpdateHandler)
 
 	app.Listen(":3000")
 }

@@ -1,17 +1,35 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Person struct is how we can interface with data submitted by a form
 type Person struct {
-	Name    string `json:"name"`    // Name of an employee
-	Company string `json:"company"` // Company of an employee
-	Age     int16  `json:"age"`     // Age of an employee
+	ID      primitive.ObjectID `bson:"_id" json:"_id,omitempty"` // Id for the document
+	Name    string             `json:"name"`                     // Name of an employee
+	Company string             `json:"company"`                  // Company of an employee
+	Age     int16              `json:"age"`                      // Age of an employee
+}
+
+func createDocument(config MongoConfig, client *mongo.Client) error {
+	collection := client.Database(config.Database).Collection(config.Collection)
+
+	_, err := collection.InsertOne(context.TODO(), config.Data)
+	if err != nil {
+		return err
+	}
+	defer client.Disconnect(context.TODO())
+
+	//fmt.Println("Inserted a single document: ", result.InsertedID)
+
+	return nil
 }
 
 // CreateHandler for parsing incomming form data
