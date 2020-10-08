@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (config MongoConfig) readDocuments(client *mongo.Client) ([]*Person, error) {
+func (p Person) readDocuments(client *mongo.Client) ([]*Person, error) {
 	var result []*Person
-	collection := client.Database(config.Database).Collection(config.Collection)
+	collection := client.Database("gofiber").Collection("people")
 
 	cur, err := collection.Find(context.TODO(), bson.D{{}}, options.Find())
 	if err != nil {
@@ -36,7 +36,7 @@ func (config MongoConfig) readDocuments(client *mongo.Client) ([]*Person, error)
 	return result, nil
 }
 
-// ReadHandler returns the read hbs template located in the views folder
+// ReadHandler returns all documents in the collection
 func ReadHandler(c *fiber.Ctx) error {
 	// struct can be found in db.go
 
@@ -51,11 +51,8 @@ func ReadHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	result, err := MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data:       nil,       // No data is need to perform a read
-	}.readDocuments(mongoClient)
+	var p Person
+	result, err := p.readDocuments(mongoClient)
 
 	if err != nil {
 		return c.JSON(Response{

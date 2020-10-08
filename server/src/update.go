@@ -9,9 +9,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (config MongoConfig) updateDocument(client *mongo.Client, update bson.M) error {
-	collection := client.Database(config.Database).Collection(config.Collection)
-	_, err := collection.UpdateOne(context.TODO(), config.Data, update)
+func (p Person) updateDocument(client *mongo.Client) error {
+	collection := client.Database("gofiber").Collection("people")
+	_, err := collection.UpdateOne(context.TODO(), bson.M{"_id": p.ID}, bson.M{
+		"$set": bson.M{
+			"Name":       p.Name,
+			"Department": p.Department,
+			"Age":        p.Age,
+			"Salary":     p.Salary,
+		},
+	})
 
 	if err != nil {
 		fmt.Println(err)
@@ -21,7 +28,7 @@ func (config MongoConfig) updateDocument(client *mongo.Client, update bson.M) er
 	return nil
 }
 
-// UpdateHandler returns the update hbs template located in the views folder
+// UpdateHandler is used to update a single document
 func UpdateHandler(c *fiber.Ctx) error {
 	p := new(Person)
 
@@ -44,20 +51,7 @@ func UpdateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	err = MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data:       bson.M{"_id": p.ID},
-	}.updateDocument(mongoClient,
-		bson.M{
-			"$set": bson.M{
-				"Name":       p.Name,
-				"Department": p.Department,
-				"Age":        p.Age,
-				"Salary":     p.Salary,
-			},
-		},
-	)
+	err = p.updateDocument(mongoClient)
 
 	if err != nil {
 		return c.JSON(Response{

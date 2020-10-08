@@ -9,10 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (config MongoConfig) createDocument(client *mongo.Client) error {
-	collection := client.Database(config.Database).Collection(config.Collection)
+func (p Person) createDocument(client *mongo.Client) error {
+	collection := client.Database("gofiber").Collection("people")
 
-	_, err := collection.InsertOne(context.TODO(), config.Data)
+	_, err := collection.InsertOne(context.TODO(), bson.M{ // The data that will be inserted into the collection
+		"Name":       p.Name,
+		"Department": p.Department,
+		"Age":        p.Age,
+		"Salary":     p.Salary,
+	})
 	if err != nil {
 		return err
 	}
@@ -20,7 +25,7 @@ func (config MongoConfig) createDocument(client *mongo.Client) error {
 	return nil
 }
 
-// CreateHandler for parsing incomming form data
+// CreateHandler for creating new documents
 func CreateHandler(c *fiber.Ctx) error {
 	p := new(Person)
 
@@ -67,16 +72,7 @@ func CreateHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	err = MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data: bson.M{ // The data that will be inserted into the collection
-			"Name":       p.Name,
-			"Department": p.Department,
-			"Age":        p.Age,
-			"Salary":     p.Salary,
-		},
-	}.createDocument(mongoClient)
+	err = p.createDocument(mongoClient)
 
 	if err != nil { // the document insertion was not successfull
 		fmt.Println(err)

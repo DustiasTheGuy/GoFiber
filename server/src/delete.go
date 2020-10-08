@@ -8,9 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (config MongoConfig) deleteDocument(client *mongo.Client) error {
-	collection := client.Database(config.Database).Collection(config.Collection)
-	_, err := collection.DeleteOne(context.TODO(), config.Data)
+func (p Person) deleteDocument(client *mongo.Client) error {
+	collection := client.Database("gofiber").Collection("people")
+	_, err := collection.DeleteOne(context.TODO(), bson.M{ // The data that will be inserted into the collection
+		"_id": p.ID,
+	})
 
 	if err != nil {
 		return err
@@ -19,7 +21,7 @@ func (config MongoConfig) deleteDocument(client *mongo.Client) error {
 	return nil
 }
 
-// DeleteHandler returns the delete hbs template located in the views folder
+// DeleteHandler returns proccesses an incomming delete request
 func DeleteHandler(c *fiber.Ctx) error {
 	p := new(Person)
 
@@ -32,17 +34,8 @@ func DeleteHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// struct can be found in db.go
-	var mongoConfig MongoConfig = MongoConfig{
-		Database:   "gofiber", // Which database
-		Collection: "people",  // Which collection
-		Data: bson.M{ // The data that will be inserted into the collection
-			"_id": p.ID,
-		},
-	}
-
 	mongoClient, err := connect() // temporarily connect to the database
-	err = mongoConfig.deleteDocument(mongoClient)
+	err = p.deleteDocument(mongoClient)
 
 	if err != nil {
 		return c.JSON(Response{

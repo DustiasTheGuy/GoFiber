@@ -11,9 +11,7 @@ import (
 
 // MongoConfig struct for inserting data into mongodb
 type MongoConfig struct {
-	Database   string
-	Collection string
-	Data       bson.M
+	Data bson.M
 }
 
 // Person struct is how we can interface with data submitted by a form
