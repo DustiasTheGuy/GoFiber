@@ -5,19 +5,19 @@
         <h1>Add Employee</h1>
 
         <md-field>
-            <label for="">Employee Name</label>
+            <label>Employee Name</label>
             <md-input type="text" placeholder="Mark Smith" v-model="name"></md-input>
         </md-field>
         <md-field>
-            <label for="">Employee Age</label>
+            <label>Employee Age</label>
             <md-input type="text" placeholder="23" v-model="age"></md-input>
         </md-field>
         <md-field>
-            <label for="">Employee Department</label>
+            <label>Employee Department</label>
             <md-input type="text" placeholder="Marketing" v-model="department"></md-input>
         </md-field>
         <md-field>
-            <label for="">Employee Salary</label>
+            <label>Employee Salary</label>
             <md-input type="text" placeholder="3900" v-model="salary"></md-input>
         </md-field>
         
@@ -84,8 +84,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .msg {
-        font-size: 18px;
+    @media only screen and (max-width: 680px) {
+      h1 {
+        font-size: 32px !important;
+        text-align: left !important;
+      }
     }
     form {
         padding: 2.43em;

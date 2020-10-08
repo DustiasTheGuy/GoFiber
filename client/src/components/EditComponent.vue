@@ -10,15 +10,16 @@
           <span class="salary">Salary</span>
         </div>
         <div class="body" v-for="emp in data" :key="emp._id">
-          <span>{{emp.name}}</span>
-          <span>{{emp.department}}</span>
-          <span>{{emp.age}}</span>
-          <span class="salary">{{emp.salary}} <a @click="selectEmployee(emp, true)">Edit</a></span>
+          <span><b>Name:</b> {{emp.name}}</span>
+          <span><b>Department:</b> {{emp.department}}</span>
+          <span><b>Age:</b> {{emp.age}}</span>
+          <span class="salary"><div><b>Salary:</b> {{emp.salary}}:-</div> <a @click="selectEmployee(emp, true)">Edit</a></span>
         </div>
     </div>
     <div class="container" v-if="editEmployee">
         <div class="edit-form">
           <h1>{{editEmployeeData.name}}</h1>
+          <button class="deleteBtn" @click="deleteEmployee()">Delete</button>
           <md-field>
             <label>Employee</label>
             <md-input v-model="editEmployeeData.name"></md-input>
@@ -38,7 +39,6 @@
 
           <div class="button-container">
             <button class="goBackBtn" @click="selectEmployee(null, false)">Go Back</button>
-            <button class="deleteBtn" @click="deleteEmployee()">Delete</button>
             <button class="submitBtn" @click="submitUpdate()">Update</button>
           </div>
         </div>
@@ -116,13 +116,41 @@ export default {
 
 <style scoped lang="scss">
 
-  a {
-    cursor: pointer;
+    b {
+      display: none;
+    }
+    @media only screen and (max-width: 680px) {
+      h1 {
+        font-size: 32px !important;
+      }
+      .header {
+        display: none !important;
+      }
+      .body {
+        display: flex !important;
+        flex-direction: column;
+        border-bottom: 1px solid lightgray;
+        span {
+          b {
+            display: inline-block;
+          }
+          border: none !important;
+        }
+      }
+    }
+  
+  .deleteBtn {
+    background-color: crimson;
+    color: #ffffff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 2.43em;
+    &:hover {
+      background-color: rgb(179, 25, 56);
+      cursor: pointer;
+    }
   }
-  .msg {
-      font-size: 18px;
-  }
-
   .edit-form {
     padding: 2.43em;
     position: relative;
@@ -133,10 +161,6 @@ export default {
     .button-container {
       display: flex;
       justify-content: space-between;
-      button {
-        border: none;
-        padding: 1em;
-      }
 
        .goBackBtn {
           background-color: #c5c4c2;
@@ -152,19 +176,6 @@ export default {
           background-color: rgb(17, 102, 17);    
           }
         }
-        .deleteBtn {
-          background-color: crimson;
-          color: #ffffff;
-          position: absolute;
-          top: 0;
-          right: 0;
-          margin: 2.43em;
-          &:hover {
-            background-color: rgb(179, 25, 56);
-            cursor: pointer;
-          }
-        }
-
     }
   }
 
@@ -200,4 +211,6 @@ export default {
       }
     }
   }
+
+
 </style>
