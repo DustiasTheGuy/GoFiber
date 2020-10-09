@@ -1,0 +1,58 @@
+.container {
+    width: 100%;
+
+    b {
+        display: none;
+    }
+
+    .header,
+    .body {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .header {
+        margin: 1em 0;
+        padding: .33em 0;
+        span {
+            font-weight: 600;
+            font-size: 18px;
+        }
+    }
+
+    .body {
+        border-bottom: 1px solid gray;
+        padding: .33em 0;
+        &:last-child {
+            border: none;
+        }
+
+        .salary {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+    .container {
+        b {
+            display: inline-block;
+        }
+
+        .header {
+            display: none;
+        }
+
+        .body {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

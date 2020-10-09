@@ -1,0 +1,64 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+a, button {
+    cursor: pointer;
+}
+
+.colors {   /* Not actually a class that is being used. Just dont want it as a comment for vs code purposes */
+    color: #165E67;
+    color: #76A1C7;
+    color: #FCFBF4;
+    color: #C2E4CA;
+    color: #8EA494;
+}
+
+header {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #165E67;
+    color: #FCFBF4;
+}
+main {
+    display: grid;
+    grid-template-columns: 1fr 3fr;     
+    grid-gap: 1em;  
+    width: 100%;
+    height: 100%;
+    background: #FCFBF4;
+    padding: 1em;
+
+    .grid-item {
+        width: 100%;
+        padding: 1em;
+        border: .35px solid #76A1C7;
+    }
+}
+
+@media only screen and (max-width: 1201px) {
+    main {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    
+}
