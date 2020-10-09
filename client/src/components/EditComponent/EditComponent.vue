@@ -6,18 +6,16 @@
 
     <div class="container" v-if="!editEmployee">
       <div class="header">
-        <span>Employee</span>
-        <span>Department</span>
-        <span>Age</span>
+        <span class="employee">Employee</span>
+        <span class="department">Department</span>
+        <span class="age">Age</span>
         <span class="salary">Salary</span>
       </div>
-      <div class="body" v-for="emp in data" :key="emp._id">
-        <span><b>Name:</b> {{emp.name}}</span>
-        <span><b>Department:</b> {{emp.department}}</span>
-        <span><b>Age:</b> {{emp.age}}</span>
-        <span class="salary">
-          <div><b>Salary:</b> {{emp.salary}}:-</div> <a @click="selectEmployee(emp, true)">Edit</a>
-        </span>
+      <div @click="selectEmployee(emp, true)" class="body" v-for="emp in data" :key="emp._id" title="Edit Employee">
+        <span class="employee"><b>Name:</b> {{emp.name}}</span>
+        <span class="department"><b>Department:</b> {{emp.department}}</span>
+        <span class="age"><b>Age:</b> {{emp.age}}</span>
+        <span class="salary"><b>Salary:</b> {{emp.salary}}:-</span>
       </div>
     </div>
     <div class="container" v-if="editEmployee">
@@ -69,6 +67,12 @@ export default {
             msgColor: "green",
             showSnackbar: false
         }
+    },
+    mounted() {
+      this.$root.$on("newEmployee", (state) => {
+        console.log("State Update:", state)
+        this.loadData();
+      })
     },
     created() {
         this.loadData()

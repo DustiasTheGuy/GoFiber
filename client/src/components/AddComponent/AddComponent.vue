@@ -34,7 +34,7 @@
 
 
 <script>
-import axios from "axios";
+import axios from "axios"
 
 export default {
     name: 'AddComponent',
@@ -49,6 +49,9 @@ export default {
             msgColor: "green",
             showSnackbar: false
         }
+    },
+    mounted() {
+
     },
     methods: {
         submit() {
@@ -70,6 +73,8 @@ export default {
                         this.age = undefined
                         this.department = undefined
                         this.salary = undefined
+                        console.log("Emitting event...")
+                        this.$root.$emit("newEmployee", { newEmployee: true })
                     } else {
                         this.msgColor = "#ff2929"
                     }

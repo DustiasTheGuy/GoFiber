@@ -16,6 +16,16 @@
       </main>
 
 
+      <footer>
+        <ul>
+          <li><a href="https://github.com/DustiasTheGuy">https://github.com/DustiasTheGuy</a></li>
+          <li>Isak Granqvist</li>
+          <li>09/10/2020</li>
+          <li>Glimåkra Sweden</li>
+          <li>Golang - Vuejs - MongoDB</li>
+        </ul>
+      </footer>
+
   </div>
 </template>
 
@@ -24,13 +34,12 @@
 import AddComponent from './components/AddComponent/AddComponent'
 import EditComponent from './components/EditComponent/EditComponent'
 
-
 export default {
   name: 'App',
   components: {
       AddComponent,
       EditComponent
-  }
+  },
 }
 </script>
 

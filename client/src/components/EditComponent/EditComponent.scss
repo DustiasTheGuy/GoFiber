@@ -9,6 +9,7 @@
     .body {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
+        position: relative;
     }
 
     .header {
@@ -25,6 +26,11 @@
         padding: .33em 0;
         &:last-child {
             border: none;
+        }
+
+        &:hover {
+            cursor: pointer;
+            background: #ddddda;
         }
 
         .salary {

@@ -15,12 +15,25 @@ a, button {
     cursor: pointer;
 }
 
+.msg {
+    display: block;
+    width: 100%;
+    font-size: 24px;
+}
+
 .colors {   /* Not actually a class that is being used. Just dont want it as a comment for vs code purposes */
     color: #165E67;
     color: #76A1C7;
     color: #FCFBF4;
     color: #C2E4CA;
     color: #8EA494;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 header {
@@ -44,6 +57,20 @@ main {
         width: 100%;
         padding: 1em;
         border: .35px solid #76A1C7;
+    }
+}
+
+footer {
+    height: 275px;
+    background-color: #8EA494;
+    ul {
+        li {
+            color: #165E67;
+            a {
+                color: #165E67 !important;  
+                text-decoration: underline !important;        
+            }
+        }
     }
 }
 
